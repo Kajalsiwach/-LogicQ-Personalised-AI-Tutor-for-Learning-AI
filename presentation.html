@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOGIQ — Project Presentation | Personalized AI Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-midnight: #080C15;
+      --bg-card: rgba(18, 28, 48, 0.75);
+      --bg-card-hover: rgba(26, 40, 68, 0.85);
+      --border-subtle: rgba(245, 202, 214, 0.12);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --accent-pink: #F5CAD6;
+      --accent-plum: #8C3052;
+      --accent-cyan: #38BDF8;
+      --accent-green: #34D399;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      --font-display: 'Space Grotesk', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-midnight);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Atmosphere */
+    .atmosphere {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 85% 15%, rgba(140, 48, 82, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 15% 85%, rgba(56, 189, 248, 0.10) 0%, transparent 60%),
+        radial-gradient(circle at 50% 50%, rgba(245, 202, 214, 0.04) 0%, transparent 80%);
+    }
+
+    .grid-lines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.15;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Slide Deck Container */
+    .deck-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 3.5rem 4.5rem;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      max-width: 1360px;
+      height: 100%;
+      max-height: 780px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.98) translateY(12px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Slide Header */
+    .slide-header {
+      margin-bottom: 1.8rem;
+    }
+
+    .slide-category {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-pink);
+      margin-bottom: 0.4rem;
+    }
+
+    .slide-category::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-pink);
+      box-shadow: 0 0 10px var(--accent-pink);
+    }
+
+    .slide-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .slide-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* Cards & Components */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 1.5rem;
+      position: relative;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--border-subtle);
+    }
+
+    /* Slide 1: Title Layout */
+    .title-slide-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 2rem;
+      height: 100%;
+      align-items: center;
+    }
+
+    .brand-hero-card {
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(145deg, rgba(20, 30, 52, 0.8), rgba(12, 18, 32, 0.9));
+      border: 1px solid rgba(245, 202, 214, 0.16);
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+      background: rgba(140, 48, 82, 0.25);
+      border: 1px solid rgba(245, 202, 214, 0.3);
+      color: var(--accent-pink);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      width: fit-content;
+      margin-bottom: 1.2rem;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 4.5rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--accent-pink);
+      line-height: 1;
+      margin-bottom: 0.6rem;
+      text-shadow: 0 0 30px rgba(245, 202, 214, 0.2);
+    }
+
+    .brand-subtitle {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+    }
+
+    .brand-tagline {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--accent-cyan);
+      margin-bottom: 1.5rem;
+    }
+
+    .brand-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 90%;
+    }
+
+    .meta-card {
+      padding: 2.2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      background: rgba(16, 24, 40, 0.85);
+    }
+
+    .meta-card-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-pink);
+      border-bottom: 1px solid var(--border-card);
+      padding-bottom: 0.75rem;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .meta-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .meta-value {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .meta-value.highlight {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Grid Layouts for Slide 2, 3, 5 */
+    .grid-2x2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.4rem;
+      height: 100%;
+    }
+
+    .grid-4x1 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      height: 100%;
+    }
+
+    .grid-4x2 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 1fr 1fr;
+      gap: 1rem;
+      height: 100%;
+    }
+
+    .step-num-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      font-family: var(--font-display);
+      margin-bottom: 0.8rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-text {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Slide 4: Pipeline Flow */
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .pipeline-card {
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-left: 3px solid var(--accent-pink);
+    }
+
+    .pipeline-num {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--accent-pink);
+      margin-bottom: 0.3rem;
+    }
+
+    .pipeline-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+
+    .pipeline-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .summary-callout {
+      background: rgba(140, 48, 82, 0.15);
+      border: 1px solid rgba(245, 202, 214, 0.2);
+      border-radius: 12px;
+      padding: 1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .summary-callout-text {
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .summary-callout-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-pink);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Slide 6: Flowchart Split */
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 1.5rem;
+      height: 100%;
+    }
+
+    .flow-step-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 0.9rem 1.2rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .flow-step-icon {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .flow-step-body {
+      flex: 1;
+    }
+
+    .flow-step-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .flow-step-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .rules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      margin-top: 1rem;
+    }
+
+    .rule-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .rule-heading {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .rule-text {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Slide 7: Complete Cycle */
+    .cycle-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      height: 100%;
+    }
+
+    .cycle-card {
+      display: flex;
+      flex-direction: column;
+      padding: 1.6rem 1.3rem;
+      border-top: 3px solid;
+    }
+
+    .cycle-phase-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.4rem;
+    }
+
+    .cycle-phase-name {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+
+    .cycle-phase-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 1.2rem;
+    }
+
+    .cycle-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .cycle-bullets li {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      line-height: 1.35;
+    }
+
+    .cycle-bullets li::before {
+      content: "•";
+      color: var(--accent-pink);
+      font-weight: bold;
+    }
+
+    /* Slide 8: Technology Grid */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      height: 100%;
+    }
+
+    .tech-card {
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1.2rem;
+    }
+
+    .tech-card-header {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .tech-spec-item {
+      margin-bottom: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .tech-spec-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    .tech-spec-val {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Slide 9: Impact Table */
+    .impact-table-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      height: 100%;
+    }
+
+    .impact-header-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 0.75rem 1.5rem;
+      background: rgba(24, 36, 60, 0.8);
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .impact-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 0.85rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .impact-row:hover {
+      border-color: var(--border-subtle);
+      background: var(--bg-card-hover);
+    }
+
+    .impact-prob {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .impact-prob-icon {
+      color: #F87171;
+      font-weight: bold;
+    }
+
+    .impact-sol {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #fff;
+      font-weight: 500;
+      font-size: 0.88rem;
+    }
+
+    .impact-sol-icon {
+      color: var(--accent-green);
+      font-weight: bold;
+    }
+
+    /* Slide 10: Conclusion Layout */
+    .conclusion-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 2rem;
+      height: 100%;
+      align-items: center;
+    }
+
+    .takeaways-card {
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .takeaway-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .takeaway-badge {
+      width: 1.8rem;
+      height: 1.8rem;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+
+    .takeaway-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+
+    .takeaway-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .closing-card {
+      padding: 3rem 2.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(145deg, rgba(20, 30, 52, 0.9), rgba(12, 18, 32, 0.95));
+      border: 1px solid rgba(245, 202, 214, 0.2);
+    }
+
+    .thank-you-title {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--accent-pink);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+      text-shadow: 0 0 25px rgba(245, 202, 214, 0.25);
+    }
+
+    .qa-subtitle {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 1.8rem;
+    }
+
+    .repo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .repo-link:hover {
+      border-color: var(--accent-pink);
+      color: #fff;
+    }
+
+    /* Deck Controls & Bottom Bar */
+    .deck-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      background: rgba(8, 12, 21, 0.85);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      z-index: 100;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .footer-brand span {
+      color: var(--accent-pink);
+    }
+
+    .footer-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      padding: 0.35rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.15s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--accent-pink);
+    }
+
+    .nav-counter {
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: var(--font-display);
+      color: var(--accent-pink);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .keyboard-hint {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    /* Print styles for exporting clean PDF */
+    @media print {
+      body {
+        overflow: visible;
+        height: auto;
+      }
+      .atmosphere, .grid-lines, .deck-footer {
+        display: none !important;
+      }
+      .deck-container {
+        padding: 0;
+        display: block;
+      }
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        page-break-after: always;
+        height: 100vh !important;
+        max-height: none !important;
+        padding: 3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="atmosphere"></div>
+  <div class="grid-lines"></div>
+
+  <div class="deck-container">
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 1: Title & Student Information -->
+    <!-- ============================================================== -->
+    <div class="slide active" id="slide-1">
+      <div class="title-slide-grid">
+        <div class="card brand-hero-card">
+          <div class="badge-pill">Academic Capstone Project • AI / ML</div>
+          <h1 class="brand-title">LOGIQ</h1>
+          <div class="brand-subtitle">Personalized AI Tutor for Learning AI</div>
+          <div class="brand-tagline">Learn Smarter. Build Better.</div>
+          <p class="brand-desc">
+            An intelligent, student-centered learning environment combining adaptive diagnostic assessments, 
+            structured pedagogical explanations, interactive mathematical visuals, and closed-loop practice remediation.
+          </p>
+        </div>
+
+        <div class="card meta-card">
+          <div class="meta-card-title">Project & Candidate Profile</div>
+          
+          <div class="meta-row">
+            <span class="meta-label">Student Name</span>
+            <span class="meta-value highlight">Kajal Siwach</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Roll Number / ID</span>
+            <span class="meta-value">[Roll Number / Student ID]</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Program & Branch</span>
+            <span class="meta-value">B.Tech in Computer Science & Engineering</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Specialization</span>
+            <span class="meta-value">Artificial Intelligence & Machine Learning</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Institution / University</span>
+            <span class="meta-value">[University / Institution Name]</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Faculty Mentor / Supervisor</span>
+            <span class="meta-value">[Faculty Mentor / Guide Name]</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Repository</span>
+            <span class="meta-value" style="font-size: 0.8rem; color: var(--accent-cyan);">github.com/Kajalsiwach/-LogicQ-...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 2: Problem Statement -->
+    <!-- ============================================================== -->
+    <div class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="slide-category">Problem Statement</div>
+        <h2 class="slide-title">The Challenge in AI/ML Education</h2>
+        <p class="slide-subtitle">Why traditional computer science education and static tutorials struggle with machine learning</p>
+      </div>
+
+      <div class="grid-2x2">
+        <div class="card">
+          <div class="step-num-pill" style="background: rgba(245, 202, 214, 0.15); color: var(--accent-pink); border: 1px solid var(--accent-pink);">01</div>
+          <h3 class="card-title">Overwhelming Concept Density</h3>
+          <p class="card-text">
+            AI/ML spans multivariate calculus, linear algebra, algorithmic complexity, neural layer architectures, and continuous tooling shifts. 
+            Students encounter severe cognitive overload without an organized, step-by-step entry path.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="step-num-pill" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid var(--accent-cyan);">02</div>
+          <h3 class="card-title">One-Size-Fits-All Curricula</h3>
+          <p class="card-text">
+            Standard video playlists, textbooks, and online courses deliver identical lectures to every student. 
+            Beginners are rushed through abstract mathematics, while experienced learners waste time on concepts they already master.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="step-num-pill" style="background: rgba(140, 48, 82, 0.25); color: var(--accent-pink); border: 1px solid var(--accent-plum);">03</div>
+          <h3 class="card-title">Invisible Knowledge Gaps</h3>
+          <p class="card-text">
+            Learners frequently cannot pinpoint their exact misunderstandings until models fail during implementation. 
+            Without diagnostic benchmarking, foundational misconceptions remain hidden under false confidence.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="step-num-pill" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green);">04</div>
+          <h3 class="card-title">Absence of Adaptive Practice</h3>
+          <p class="card-text">
+            Passive reading and video watching lack active mental model verification. 
+            When exercises exist, they rarely explain <em>why</em> alternative distractors fail or offer targeted recovery when a student struggles.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 3: Why We Created LOGIQ -->
+    <!-- ============================================================== -->
+    <div class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="slide-category">Motivation & Core Purpose</div>
+        <h2 class="slide-title">Why We Created LOGIQ</h2>
+        <p class="slide-subtitle">Four core pillars establishing an active, student-centric cognitive tutoring architecture</p>
+      </div>
+
+      <div class="grid-4x1">
+        <div class="card" style="border-top: 3px solid var(--accent-pink);">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--accent-pink); letter-spacing: 0.1em; margin-bottom: 0.5rem;">PILLAR 01</div>
+          <h3 class="card-title" style="font-size: 1.1rem;">Personalized Experience</h3>
+          <p class="card-text">
+            Tailor the curriculum directly to each student's career aspirations, target AI domains (e.g., Computer Vision, NLP, LLMs), and personal learning pace.
+          </p>
+        </div>
+
+        <div class="card" style="border-top: 3px solid var(--accent-cyan);">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--accent-cyan); letter-spacing: 0.1em; margin-bottom: 0.5rem;">PILLAR 02</div>
+          <h3 class="card-title" style="font-size: 1.1rem;">Calibrated Baseline</h3>
+          <p class="card-text">
+            Evaluate existing mathematical and conceptual depth through diagnostic inquiry rather than relying on arbitrary self-reporting or assumptions.
+          </p>
+        </div>
+
+        <div class="card" style="border-top: 3px solid var(--accent-plum);">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--accent-pink); letter-spacing: 0.1em; margin-bottom: 0.5rem;">PILLAR 03</div>
+          <h3 class="card-title" style="font-size: 1.1rem;">Dynamic Adaptation</h3>
+          <p class="card-text">
+            Automatically restructure the learning roadmap: bypass validated proficiencies and allocate focused depth to isolated weaknesses.
+          </p>
+        </div>
+
+        <div class="card" style="border-top: 3px solid var(--accent-green);">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--accent-green); letter-spacing: 0.1em; margin-bottom: 0.5rem;">PILLAR 04</div>
+          <h3 class="card-title" style="font-size: 1.1rem;">Unified Environment</h3>
+          <p class="card-text">
+            Consolidate intuition-first explanations, interactive mathematics, active practice questions, immediate feedback, and transparent progress in one home.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 4: Proposed Solution -->
+    <!-- ============================================================== -->
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="slide-category">System Workflow</div>
+        <h2 class="slide-title">Proposed Solution: The LOGIQ Pipeline</h2>
+        <p class="slide-subtitle">A cohesive, continuous 8-step journey transitioning learners from initial diagnostic to confirmed mastery</p>
+      </div>
+
+      <div class="pipeline-grid">
+        <div class="card pipeline-card">
+          <div class="pipeline-num">STEP 01</div>
+          <div class="pipeline-title">Select Concepts</div>
+          <div class="pipeline-desc">Target specific AI/ML tracks including DL, NLP, Vision, GenAI, and Foundations.</div>
+        </div>
+
+        <div class="card pipeline-card" style="border-left-color: var(--accent-cyan);">
+          <div class="pipeline-num" style="color: var(--accent-cyan);">STEP 02</div>
+          <div class="pipeline-title">Assessment</div>
+          <div class="pipeline-desc">10–15 adaptive diagnostic questions calibrated by topic breadth and difficulty.</div>
+        </div>
+
+        <div class="card pipeline-card" style="border-left-color: var(--accent-plum);">
+          <div class="pipeline-num" style="color: var(--accent-pink);">STEP 03</div>
+          <div class="pipeline-title">Knowledge Analysis</div>
+          <div class="pipeline-desc">Algorithms isolate validated proficiencies and isolate exact concept gaps.</div>
+        </div>
+
+        <div class="card pipeline-card" style="border-left-color: var(--accent-green);">
+          <div class="pipeline-num" style="color: var(--accent-green);">STEP 04</div>
+          <div class="pipeline-title">Custom Roadmap</div>
+          <div class="pipeline-desc">Constructs an ordered milestone progression matching the student's background.</div>
+        </div>
+      </div>
+
+      <div class="pipeline-grid" style="margin-bottom: 1.4rem;">
+        <div class="card pipeline-card" style="border-left-color: var(--accent-pink);">
+          <div class="pipeline-num">STEP 05</div>
+          <div class="pipeline-title">Deep Learn Phase</div>
+          <div class="pipeline-desc">Structured intuition, formulas, interactive visual models, and worked examples.</div>
+        </div>
+
+        <div class="card pipeline-card" style="border-left-color: var(--accent-cyan);">
+          <div class="pipeline-num" style="color: var(--accent-cyan);">STEP 06</div>
+          <div class="pipeline-title">Practice Arena</div>
+          <div class="pipeline-desc">Topic-specific conceptual comprehension tests verifying mental models.</div>
+        </div>
+
+        <div class="card pipeline-card" style="border-left-color: var(--accent-plum);">
+          <div class="pipeline-num" style="color: var(--accent-pink);">STEP 07</div>
+          <div class="pipeline-title">Instant Feedback</div>
+          <div class="pipeline-desc">In-depth explanations of why answers hold and why distractors fail.</div>
+        </div>
+
+        <div class="card pipeline-card" style="border-left-color: var(--accent-green);">
+          <div class="pipeline-num" style="color: var(--accent-green);">STEP 08</div>
+          <div class="pipeline-title">Continuous Progress</div>
+          <div class="pipeline-desc">Milestone unlocking, skill matrix radar update, and permanent mastery logs.</div>
+        </div>
+      </div>
+
+      <div class="summary-callout">
+        <span class="summary-callout-text">
+          <strong>Key Architecture Distinction:</strong> LOGIQ completely eliminates fabricated statistics and passive consumption, ensuring genuine mastery.
+        </span>
+        <span class="summary-callout-tag">Closed-Loop Learning</span>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 5: Key Features -->
+    <!-- ============================================================== -->
+    <div class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="slide-category">Capabilities</div>
+        <h2 class="slide-title">Core Platform Features</h2>
+        <p class="slide-subtitle">Eight integrated components engineered for conceptual rigor and high retention</p>
+      </div>
+
+      <div class="grid-4x2">
+        <div class="card">
+          <div style="color: var(--accent-pink); font-size: 1.1rem; margin-bottom: 0.3rem;">🎯</div>
+          <div class="card-title" style="font-size: 0.95rem;">Personalized Paths</div>
+          <p class="card-text" style="font-size: 0.78rem;">Dynamic milestone sequence tailored directly to diagnosed gaps and user interests.</p>
+        </div>
+
+        <div class="card">
+          <div style="color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 0.3rem;">🧠</div>
+          <div class="card-title" style="font-size: 0.95rem;">Adaptive Assessment</div>
+          <p class="card-text" style="font-size: 0.78rem;">Intelligent 10–15 question diagnostic engine scaled by domain breadth and complexity.</p>
+        </div>
+
+        <div class="card">
+          <div style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 0.3rem;">📖</div>
+          <div class="card-title" style="font-size: 0.95rem;">Human Explanations</div>
+          <p class="card-text" style="font-size: 0.78rem;">Professor-grade pedagogy: intuition → core concepts → mathematical mechanics → examples.</p>
+        </div>
+
+        <div class="card">
+          <div style="color: var(--accent-pink); font-size: 1.1rem; margin-bottom: 0.3rem;">📊</div>
+          <div class="card-title" style="font-size: 0.95rem;">Interactive Visuals</div>
+          <p class="card-text" style="font-size: 0.78rem;">Live Sigmoid graphs with interactive sliders, algorithmic flowcharts, and neural architectures.</p>
+        </div>
+
+        <div class="card">
+          <div style="color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 0.3rem;">✍️</div>
+          <div class="card-title" style="font-size: 0.95rem;">Topic Practice Arena</div>
+          <p class="card-text" style="font-size: 0.78rem;">Targeted conceptual verification testing reasoning and understanding rather than syntax recall.</p>
+        </div>
+
+        <div class="card">
+          <div style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 0.3rem;">💡</div>
+          <div class="card-title" style="font-size: 0.95rem;">Instant Feedback</div>
+          <p class="card-text" style="font-size: 0.78rem;">Real-time analysis detailing why correct choices are valid and why distractors fail.</p>
+        </div>
+
+        <div class="card">
+          <div style="color: var(--accent-pink); font-size: 1.1rem; margin-bottom: 0.3rem;">🔄</div>
+          <div class="card-title" style="font-size: 0.95rem;">Targeted Recovery</div>
+          <p class="card-text" style="font-size: 0.78rem;">Non-punitive remediation loop serving targeted recap notes and fresh variant questions.</p>
+        </div>
+
+        <div class="card">
+          <div style="color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 0.3rem;">📈</div>
+          <div class="card-title" style="font-size: 0.95rem;">Transparent History</div>
+          <p class="card-text" style="font-size: 0.78rem;">Genuine zero-baseline analytics with skill matrix radar and permanent session history.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 6: How LOGIQ Personalizes Learning -->
+    <!-- ============================================================== -->
+    <div class="slide" id="slide-6">
+      <div class="slide-header">
+        <div class="slide-category">Adaptation Mechanism</div>
+        <h2 class="slide-title">How LOGIQ Personalizes Learning</h2>
+        <p class="slide-subtitle">A dynamic feedback loop that responds continuously to individual learner performance</p>
+      </div>
+
+      <div class="split-grid">
+        <div>
+          <div class="flow-step-row">
+            <div class="flow-step-icon" style="background: rgba(245, 202, 214, 0.2); color: var(--accent-pink);">1</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Student Goals & Concept Selection</div>
+              <div class="flow-step-desc">Learner selects target tracks (Machine Learning, Deep Learning, Vision, NLP, GenAI).</div>
+            </div>
+          </div>
+
+          <div class="flow-step-row">
+            <div class="flow-step-icon" style="background: rgba(56, 189, 248, 0.2); color: var(--accent-cyan);">2</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Adaptive Diagnostic Assessment</div>
+              <div class="flow-step-desc">Generates 10–15 questions calibrated across foundational and intermediate layers.</div>
+            </div>
+          </div>
+
+          <div class="flow-step-row">
+            <div class="flow-step-icon" style="background: rgba(140, 48, 82, 0.25); color: var(--accent-pink);">3</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Knowledge Gap & Strength Analysis</div>
+              <div class="flow-step-desc">Identifies validated proficiencies, isolated gaps, and optimal learning velocity.</div>
+            </div>
+          </div>
+
+          <div class="flow-step-row">
+            <div class="flow-step-icon" style="background: rgba(52, 211, 153, 0.2); color: var(--accent-green);">4</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Personalized Roadmap Generation</div>
+              <div class="flow-step-desc">Constructs an ordered milestone progression matching the student's background.</div>
+            </div>
+          </div>
+
+          <div class="flow-step-row">
+            <div class="flow-step-icon" style="background: rgba(245, 202, 214, 0.2); color: var(--accent-pink);">5</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Continuous Feedback & Remediation</div>
+              <div class="flow-step-desc">Adapts practice difficulty and initiates recovery workflows based on test outcomes.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="background: rgba(16, 24, 42, 0.9); border-color: rgba(245, 202, 214, 0.2);">
+          <div style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-pink); margin-bottom: 0.8rem;">
+            Personalization Principles
+          </div>
+
+          <div class="rules-list">
+            <div class="rule-item">
+              <div class="rule-heading">✦ Zero Fabricated Statistics</div>
+              <div class="rule-text">Every user begins with an honest clean slate; no artificial streaks or fake progress metrics.</div>
+            </div>
+
+            <div class="rule-item">
+              <div class="rule-heading">✦ Dynamic Diagnostic Sizing</div>
+              <div class="rule-text">Question count scales (10 to 15) to match the mathematical complexity of chosen topics.</div>
+            </div>
+
+            <div class="rule-item">
+              <div class="rule-heading">✦ Respect for Learner Velocity</div>
+              <div class="rule-text">Verified competencies are skipped; precious study time is reserved for actual conceptual gaps.</div>
+            </div>
+
+            <div class="rule-item">
+              <div class="rule-heading">✦ Non-Punitive Remediation</div>
+              <div class="rule-text">Failing a practice test triggers targeted quick-notes and fresh questions, not demotivation.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 7: Learning & Practice Experience -->
+    <!-- ============================================================== -->
+    <div class="slide" id="slide-7">
+      <div class="slide-header">
+        <div class="slide-category">Pedagogical Execution</div>
+        <h2 class="slide-title">The Complete Learning Cycle</h2>
+        <p class="slide-subtitle">A robust four-phase mastery cycle bridging theoretical intuition, active testing, and recovery</p>
+      </div>
+
+      <div class="cycle-grid">
+        <div class="card cycle-card" style="border-top-color: var(--accent-pink);">
+          <div class="cycle-phase-badge" style="color: var(--accent-pink);">PHASE 01</div>
+          <div class="cycle-phase-name">LEARN</div>
+          <div class="cycle-phase-sub">Multi-Tier Explanation</div>
+          <ul class="cycle-bullets">
+            <li>Intuition & "Why it exists"</li>
+            <li>Demystified technical jargon</li>
+            <li>LaTeX mathematical formulas</li>
+            <li>Interactive diagrams & graphs</li>
+            <li>Concrete numerical examples</li>
+          </ul>
+        </div>
+
+        <div class="card cycle-card" style="border-top-color: var(--accent-cyan);">
+          <div class="cycle-phase-badge" style="color: var(--accent-cyan);">PHASE 02</div>
+          <div class="cycle-phase-name">PRACTICE</div>
+          <div class="cycle-phase-sub">Conceptual Verification</div>
+          <ul class="cycle-bullets">
+            <li>3–4 targeted questions</li>
+            <li>Evaluates mental models</li>
+            <li>Instant answer evaluation</li>
+            <li>Full distractor breakdown</li>
+            <li>Direct reference back to lesson</li>
+          </ul>
+        </div>
+
+        <div class="card cycle-card" style="border-top-color: var(--accent-green);">
+          <div class="cycle-phase-badge" style="color: var(--accent-green);">PHASE 03</div>
+          <div class="cycle-phase-name">REPORT</div>
+          <div class="cycle-phase-sub">Diagnostic Evaluation</div>
+          <ul class="cycle-bullets">
+            <li>Instant score calculation</li>
+            <li>Identifies mastered concepts</li>
+            <li>Flags remaining weak areas</li>
+            <li>Mastery threshold: ≥ 75%</li>
+            <li>Unlocks next milestone</li>
+          </ul>
+        </div>
+
+        <div class="card cycle-card" style="border-top-color: var(--accent-plum);">
+          <div class="cycle-phase-badge" style="color: var(--accent-pink);">PHASE 04</div>
+          <div class="cycle-phase-name">RECOVERY</div>
+          <div class="cycle-phase-sub">Targeted Remediation</div>
+          <ul class="cycle-bullets">
+            <li>Triggered when score &lt; 75%</li>
+            <li>Targeted concept review notes</li>
+            <li>Fresh alternative questions</li>
+            <li>Non-punitive re-evaluation</li>
+            <li>Guarantees mastery before exit</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 8: Technology & System Overview -->
+    <!-- ============================================================== -->
+    <div class="slide" id="slide-8">
+      <div class="slide-header">
+        <div class="slide-category">System Architecture</div>
+        <h2 class="slide-title">Technology & Implementation Overview</h2>
+        <p class="slide-subtitle">Concrete, verified technologies powering the implemented LOGIQ platform</p>
+      </div>
+
+      <div class="tech-grid">
+        <div class="card tech-card">
+          <div class="tech-card-header" style="color: var(--accent-pink);">Frontend Client</div>
+          
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Core Framework</span>
+            <span class="tech-spec-val">React 19.3 + TypeScript 6.0</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Styling Engine</span>
+            <span class="tech-spec-val">Tailwind CSS v4 (Pure CSS-first)</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Desktop Viewport</span>
+            <span class="tech-spec-val">100% Full-Screen Layout Architecture</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Visual Atmosphere</span>
+            <span class="tech-spec-val">Midnight Blue, Blush Pink & Plum</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Iconography</span>
+            <span class="tech-spec-val">Lucide React SVG Vectors</span>
+          </div>
+        </div>
+
+        <div class="card tech-card">
+          <div class="tech-card-header" style="color: var(--accent-cyan);">Dual Intelligence</div>
+          
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Live API Provider</span>
+            <span class="tech-spec-val">Google Gemini 2.5 Flash API</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Data Schema</span>
+            <span class="tech-spec-val">Strict Structured JSON Generation</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Offline Fallback</span>
+            <span class="tech-spec-val">Built-in Educational Synthesis</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">API Management</span>
+            <span class="tech-spec-val">In-App UI Key Switcher & .env</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Availability</span>
+            <span class="tech-spec-val">100% Operational without API keys</span>
+          </div>
+        </div>
+
+        <div class="card tech-card">
+          <div class="tech-card-header" style="color: var(--accent-green);">Visual & Learning</div>
+          
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Diagnostic Core</span>
+            <span class="tech-spec-val">10–15 Question Adaptive Pool</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Interactive Math</span>
+            <span class="tech-spec-val">Dynamic Sigmoid Slider [-6, 6]</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Visual Systems</span>
+            <span class="tech-spec-val">Flowcharts, Architectures, Tables</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Practice Engine</span>
+            <span class="tech-spec-val">Distractor Evaluation & Remediation</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Effects</span>
+            <span class="tech-spec-val">Canvas Confetti on Mastery</span>
+          </div>
+        </div>
+
+        <div class="card tech-card">
+          <div class="tech-card-header" style="color: var(--accent-pink);">State & Privacy</div>
+          
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">State Management</span>
+            <span class="tech-spec-val">React Context API (AppContext)</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Storage Sync</span>
+            <span class="tech-spec-val">100% Client-Side LocalStorage</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Zero Telemetry</span>
+            <span class="tech-spec-val">No external user tracking or database</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Security</span>
+            <span class="tech-spec-val">API keys stay strictly in browser</span>
+          </div>
+
+          <div class="tech-spec-item">
+            <span class="tech-spec-label">Build Engine</span>
+            <span class="tech-spec-val">Vite 8.3 Lightning-Fast Pipeline</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 9: Impact / Problem vs Solution Comparison -->
+    <!-- ============================================================== -->
+    <div class="slide" id="slide-9">
+      <div class="slide-header">
+        <div class="slide-category">Comparative Impact</div>
+        <h2 class="slide-title">How LOGIQ Solves the Learning Crisis</h2>
+        <p class="slide-subtitle">Direct, verifiable mapping between conventional educational flaws and LOGIQ's adaptive solutions</p>
+      </div>
+
+      <div class="impact-table-wrap">
+        <div class="impact-header-row">
+          <span style="color: #F87171;">Conventional Learning Bottlenecks</span>
+          <span style="color: var(--accent-green);">LOGIQ's Implemented Approach</span>
+        </div>
+
+        <div class="impact-row">
+          <div class="impact-prob"><span class="impact-prob-icon">✕</span> Same static content delivered to everyone</div>
+          <div class="impact-sol"><span class="impact-sol-icon">✓</span> Personalized learning path calibrated to individual goals and level</div>
+        </div>
+
+        <div class="impact-row">
+          <div class="impact-prob"><span class="impact-prob-icon">✕</span> Unknown knowledge gaps & false confidence</div>
+          <div class="impact-sol"><span class="impact-sol-icon">✓</span> Adaptive 10–15 question diagnostic assessment identifying exact weak spots</div>
+        </div>
+
+        <div class="impact-row">
+          <div class="impact-prob"><span class="impact-prob-icon">✕</span> Overly abstract math & unhelpful jargon walls</div>
+          <div class="impact-sol"><span class="impact-sol-icon">✓</span> Intuition-first explanations + interactive visual graphs & parameter breakdowns</div>
+        </div>
+
+        <div class="impact-row">
+          <div class="impact-prob"><span class="impact-prob-icon">✕</span> Passive video watching with no active checks</div>
+          <div class="impact-sol"><span class="impact-sol-icon">✓</span> Topic-specific practice tests directly evaluating conceptual reasoning</div>
+        </div>
+
+        <div class="impact-row">
+          <div class="impact-prob"><span class="impact-prob-icon">✕</span> No feedback on why answers are incorrect</div>
+          <div class="impact-sol"><span class="impact-sol-icon">✓</span> Immediate feedback analyzing both correct answers and distractors</div>
+        </div>
+
+        <div class="impact-row">
+          <div class="impact-prob"><span class="impact-prob-icon">✕</span> Weak areas remain permanently unresolved</div>
+          <div class="impact-sol"><span class="impact-sol-icon">✓</span> Closed-loop recovery with targeted concept recaps and fresh variant questions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SLIDE 10: Conclusion & Thank You -->
+    <!-- ============================================================== -->
+    <div class="slide" id="slide-10">
+      <div class="conclusion-grid">
+        <div class="card takeaways-card">
+          <div>
+            <div class="slide-category">Conclusion & Key Takeaways</div>
+            <h2 style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem;">
+              Empowering the Next Generation of AI Builders
+            </h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.45;">
+              LOGIQ provides a personalized, adaptive environment for mastering artificial intelligence from first principles.
+            </p>
+          </div>
+
+          <div class="takeaway-item">
+            <div class="takeaway-badge">01</div>
+            <div>
+              <div class="takeaway-title">Adaptive Diagnostic Baseline</div>
+              <div class="takeaway-desc">Replaces generic tutorials with variable-length assessments that reveal true knowledge levels without fabricated metrics.</div>
+            </div>
+          </div>
+
+          <div class="takeaway-item">
+            <div class="takeaway-badge" style="background: rgba(245, 202, 214, 0.15); color: var(--accent-pink);">02</div>
+            <div>
+              <div class="takeaway-title">Integrated Pedagogical Loop</div>
+              <div class="takeaway-desc">Bridges intuitive professor-grade theory, interactive mathematical visualizers, and instant-feedback practice in one platform.</div>
+            </div>
+          </div>
+
+          <div class="takeaway-item">
+            <div class="takeaway-badge" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-green);">03</div>
+            <div>
+              <div class="takeaway-title">Production-Ready Architecture</div>
+              <div class="takeaway-desc">Engineered with modern React 19, dual-engine AI resilience, 100% full-screen desktop ergonomics, and client-side privacy.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card closing-card">
+          <div class="thank-you-title">THANK YOU!</div>
+          <div class="qa-subtitle">Questions & Discussion</div>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem; max-width: 320px;">
+            Presenter: <strong>Kajal Siwach</strong><br>
+            B.Tech in Computer Science & Engineering (AI/ML)
+          </p>
+          <a href="https://github.com/Kajalsiwach/-LogicQ-Personalised-AI-Tutor-for-Learning-AI" target="_blank" class="repo-link">
+            <span>⭐ View GitHub Repository</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="deck-footer">
+    <div class="footer-brand">
+      LOGIQ <span>•</span> Academic Project Presentation
+    </div>
+
+    <div class="footer-nav">
+      <button class="nav-btn" id="prev-btn" onclick="prevSlide()">← Previous</button>
+      <div class="nav-counter" id="slide-counter">Slide 1 of 10</div>
+      <button class="nav-btn" id="next-btn" onclick="nextSlide()">Next →</button>
+      <button class="nav-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    </div>
+
+    <div class="keyboard-hint">
+      Use <strong>← / →</strong> or <strong>Space</strong> to navigate
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function showSlide(index) {
+      if (index < 1) index = 1;
+      if (index > totalSlides) index = totalSlides;
+      currentSlide = index;
+
+      document.querySelectorAll('.slide').forEach((slide, idx) => {
+        slide.classList.toggle('active', (idx + 1) === currentSlide);
+      });
+
+      document.getElementById('slide-counter').textContent = `Slide ${currentSlide} of ${totalSlides}`;
+      document.getElementById('prev-btn').disabled = currentSlide === 1;
+      document.getElementById('next-btn').disabled = currentSlide === totalSlides;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          alert(`Error attempting to enable full-screen mode: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        showSlide(1);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        showSlide(totalSlides);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+    });
+
+    // Initial setup
+    showSlide(1);
+  </script>
+</body>
+</html>
