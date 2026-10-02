@@ -50,31 +50,31 @@ LOGIQ is built on a high-throughput, client-side reactive architecture using **R
 
 ```mermaid
 graph TD
-    subgraph Presentation_Layer [Presentation & Viewport Layer (100% Desktop Viewport)]
-        A1[Fixed Glass Sidebar]
-        A2[Dynamic Atmospheric Shell]
-        A3[Adaptive Header & Route Engine]
-        A4[Interactive Canvas & SVG Visualizers]
+    subgraph Presentation_Layer ["Presentation and Viewport Layer"]
+        A1["Fixed Glass Sidebar"]
+        A2["Dynamic Atmospheric Shell"]
+        A3["Adaptive Header and Route Engine"]
+        A4["Interactive Canvas and SVG Visualizers"]
     end
 
-    subgraph State_Engine [Core Reactive State Management]
-        B1[AppContext Container]
-        B2[Local Persistence Sync]
-        B3[Zero-Telemetry Security Guard]
+    subgraph State_Engine ["Core Reactive State Management"]
+        B1["AppContext Container"]
+        B2["Local Persistence Sync"]
+        B3["Zero-Telemetry Security Guard"]
     end
 
-    subgraph Pedagogical_Pipelines [Pedagogical Intelligence Pipeline]
-        C1[Adaptive Diagnostic Engine<br/>10-15 Variable Questions]
-        C2[Knowledge Graph Analyzer<br/>Gap & Proficiency Calibration]
-        C3[Personalized Roadmap Synthesizer<br/>Milestone Dependency Ordering]
-        C4[Multi-Tier Lesson Engine<br/>Intuition to Production]
-        C5[Practice Arena & Distractor Evaluator]
-        C6[Non-Punitive Recovery Loop<br/>Score &lt; 75%]
+    subgraph Pedagogical_Pipelines ["Pedagogical Intelligence Pipeline"]
+        C1["Adaptive Diagnostic Engine (10-15 Questions)"]
+        C2["Knowledge Graph Analyzer (Skill Calibration)"]
+        C3["Personalized Roadmap Synthesizer"]
+        C4["Multi-Tier Lesson Engine"]
+        C5["Practice Arena and Distractor Evaluator"]
+        C6["Non-Punitive Recovery Loop (Score below 75%)"]
     end
 
-    subgraph Intelligence_Layer [Dual-Engine Intelligence Layer]
-        D1[Google Gemini 2.5 Flash API<br/>Structured JSON Schema]
-        D2[Offline Pedagogical Synthesis Engine<br/>Deterministic Fallback]
+    subgraph Intelligence_Layer ["Dual-Engine Intelligence Layer"]
+        D1["Google Gemini 2.5 Flash API"]
+        D2["Offline Pedagogical Synthesis Engine"]
     end
 
     Presentation_Layer --> State_Engine
@@ -92,11 +92,10 @@ Every student in LOGIQ begins from a clean, genuine first-user state without fak
 
 ```mermaid
 flowchart LR
-    S1[Stage 1<br/><b>Concept Selection</b><br/>8 Core AI/ML Domains] --> 
-    S2[Stage 2<br/><b>Diagnostic Assessment</b><br/>10-15 Adaptive Questions] --> 
-    S3[Stage 3<br/><b>Knowledge Analysis</b><br/>Skill Matrix Calibration] --> 
-    S4[Stage 4<br/><b>Dynamic Roadmap</b><br/>Personalized Milestones] --> 
-    S5[Stage 5<br/><b>Dual-Phase Mastery</b><br/>Deep Learn & Practice Arena]
+    S1["Stage 1: Concept Selection (8 AI/ML Domains)"] --> S2["Stage 2: Diagnostic Assessment (10-15 Adaptive Questions)"]
+    S2 --> S3["Stage 3: Knowledge Analysis (Skill Calibration)"]
+    S3 --> S4["Stage 4: Dynamic Roadmap (Personalized Milestones)"]
+    S4 --> S5["Stage 5: Dual-Phase Mastery (Learn & Practice Arena)"]
 
     style S1 fill:#080C15,stroke:#F5CAD6,stroke-width:2px,color:#fff
     style S2 fill:#080C15,stroke:#7E2948,stroke-width:2px,color:#fff
@@ -109,17 +108,17 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    StartLearn[Start Structured Lesson] --> DeepExplanation[Read Multi-Tier Pedagogical Explanation]
-    DeepExplanation --> InteractiveVisual[Interact with Mathematical & Architectural Visuals]
-    InteractiveVisual --> ReadyPractice[Click: I'm ready — Start Practice]
-    ReadyPractice --> PracticeArena[Solve 3-4 Conceptual Questions]
-    PracticeArena --> Evaluation{Score Evaluation}
+    StartLearn["Start Structured Lesson"] --> DeepExplanation["Read Pedagogical Explanation"]
+    DeepExplanation --> InteractiveVisual["Interact with Visuals and Models"]
+    InteractiveVisual --> ReadyPractice["Start Practice Arena"]
+    ReadyPractice --> PracticeArena["Solve Conceptual Questions"]
+    PracticeArena --> Evaluation{"Score Evaluation"}
     
-    Evaluation -- "Score ≥ 75%" --> Mastery[Milestone Mastered<br/>Unlocks Next Learning Node]
-    Evaluation -- "Score &lt; 75%" --> RecoveryState[Activate Knowledge Recovery State]
+    Evaluation -->|"Score >= 75%"| Mastery["Milestone Mastered"]
+    Evaluation -->|"Score < 75%"| RecoveryState["Activate Recovery State"]
     
-    RecoveryState --> RemedialRecap[Review Focused Targeted Notes]
-    RemedialRecap --> VariantQuestions[Generate Fresh Variant Questions]
+    RecoveryState --> RemedialRecap["Review Targeted Notes"]
+    RemedialRecap --> VariantQuestions["Generate Fresh Variant Questions"]
     VariantQuestions --> PracticeArena
 
     style Mastery fill:#080C15,stroke:#22c55e,stroke-width:2px,color:#fff
