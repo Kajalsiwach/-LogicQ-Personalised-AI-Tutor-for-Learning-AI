@@ -44,22 +44,30 @@ export const MobileNav: React.FC = () => {
           <button
             key={item.id}
             onClick={() => handleNavClick(item.id)}
-            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all ${
+            className={`group flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all duration-200 cursor-pointer ${
               isActive
                 ? 'text-[#F5CAD6]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <div
-              className={`p-1.5 rounded-lg transition-all ${
-                isActive ? 'bg-[#FAF0F4]/15' : ''
+              className={`relative p-1.5 rounded-lg transition-transform duration-200 ${
+                isActive
+                  ? 'bg-[#FAF0F4]/15 scale-105'
+                  : 'group-hover:scale-110 group-hover:-translate-y-0.5'
               }`}
             >
-              <Icon className="w-4 h-4" />
+              {isActive && (
+                <span className="absolute inset-0 rounded-lg bg-[#E598AC]/20 blur-xs pointer-events-none" />
+              )}
+              <Icon className="w-4 h-4 relative z-10" />
             </div>
-            <span className="text-[10px] font-medium tracking-tight">
+            <span className="text-[10px] font-ui font-medium tracking-tight">
               {item.label}
             </span>
+            {isActive && (
+              <span className="w-1 h-1 rounded-full bg-[#E598AC] -mt-0.5" />
+            )}
           </button>
         );
       })}

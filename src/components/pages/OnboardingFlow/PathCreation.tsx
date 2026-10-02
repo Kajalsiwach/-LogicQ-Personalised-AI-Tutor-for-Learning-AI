@@ -1,11 +1,21 @@
 import React from 'react';
 import { useApp } from '../../../context/AppContext';
-import { ArrowRight, CheckCircle2, Lock, Sparkles, Award } from 'lucide-react';
+import { generateCurriculumRoadmap } from '../../../data/aimlConcepts';
+import { ArrowRight, CheckCircle2, Lock, Sparkles, BookOpen, Clock } from 'lucide-react';
 import { Logo } from '../../common/Logo';
 import confetti from 'canvas-confetti';
 
 export const PathCreation: React.FC = () => {
-  const { setIsOnboardingActive, setActivePage } = useApp();
+  const { selectedConcepts, userState, finalizeOnboarding } = useApp();
+
+  const generatedNodes = React.useMemo(() => {
+    return generateCurriculumRoadmap(
+      selectedConcepts.length > 0
+        ? selectedConcepts
+        : ['machine-learning', 'deep-learning'],
+      userState.diagnosticScore
+    );
+  }, [selectedConcepts, userState.diagnosticScore]);
 
   const handleLaunchDashboard = () => {
     try {
@@ -19,128 +29,119 @@ export const PathCreation: React.FC = () => {
       // safe fallback
     }
     setTimeout(() => {
-      setIsOnboardingActive(false);
-      setActivePage('dashboard');
-    }, 400);
+      finalizeOnboarding();
+    }, 350);
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between p-6 sm:p-12 bg-[#080C15]">
-      {/* Header */}
-      <header className="flex items-center justify-between z-10 max-w-3xl mx-auto w-full">
+    <div className="min-h-screen flex flex-col justify-between p-6 sm:p-12 bg-[#070B14]">
+      {/* Top Header */}
+      <header className="flex items-center justify-between z-10 max-w-4xl mx-auto w-full">
         <Logo />
-        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-          <span className="text-[#F5CAD6]">Step 4</span>
-          <span>of 4: Personalized Path Ready</span>
+        <div className="flex items-center gap-3 text-xs font-semibold text-slate-400">
+          <span className="text-[#F5CAD6]">Step 5 of 5</span>
+          <span>•</span>
+          <span>Curriculum Ready</span>
         </div>
       </header>
 
       {/* Main Path Reveal */}
-      <main className="max-w-3xl mx-auto w-full py-6 z-10">
+      <main className="max-w-4xl mx-auto w-full py-6 z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF0F4]/10 text-[#F5CAD6] text-xs font-semibold mb-3 border border-[#F5CAD6]/20">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full glass-pill text-[#F5CAD6] text-xs font-semibold mb-3 border border-white/10">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Curriculum Synthesized</span>
+            <span>Personalized AI/ML Curriculum</span>
           </div>
 
-          <h2 className="font-heading font-black text-3xl sm:text-4xl text-white mb-2">
-            YOUR CUSTOM AI/ML ROADMAP
+          <h2 className="font-heading font-black text-3xl sm:text-5xl text-white mb-2 tracking-tight">
+            YOUR AI/ML LEARNING ROADMAP
           </h2>
           <p className="font-editorial italic text-slate-300 text-lg">
-            Calibrated to your strengths, focusing directly on high-leverage concepts.
+            Structured step-by-step from foundational models to advanced architectures.
           </p>
         </div>
 
-        {/* Roadmap Milestones Sequence */}
-        <div className="glass-card-dark rounded-3xl p-6 sm:p-8 border border-white/10 mb-8 space-y-4">
-          {/* Milestone 1: Foundations (Validated) */}
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-emerald-500/20">
-            <div className="flex items-center gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="font-heading font-bold text-sm text-white">
-                  1. Mathematical Foundations
-                </h4>
-                <p className="text-xs text-slate-400">Calculus & Linear Algebra fundamentals</p>
-              </div>
-            </div>
-            <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">
-              Mastered
-            </span>
-          </div>
+        {/* Dynamic Nodes Sequence */}
+        <div className="glass-card-dark rounded-3xl p-6 sm:p-8 border border-white/10 mb-8 space-y-3.5">
+          {generatedNodes.map((node, index) => {
+            const isFirst = index === 0;
 
-          {/* Milestone 2: Classification Models (Active Focus) */}
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-[#FAF0F4]/15 border border-[#F5CAD6] shadow-sm">
-            <div className="flex items-center gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-[#F5CAD6] text-[#181B28] flex items-center justify-center shrink-0 font-bold text-sm">
-                2
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h4 className="font-heading font-bold text-sm text-white">
-                    2. Classification Models
-                  </h4>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#7E2948] text-white">
-                    Active Focus
-                  </span>
+            return (
+              <div
+                key={node.id}
+                className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl border transition-all ${
+                  isFirst
+                    ? 'clay-card-light'
+                    : 'bg-white/5 border-white/5 opacity-80'
+                }`}
+              >
+                <div className="flex items-start sm:items-center gap-3.5">
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-bold text-sm ${
+                      isFirst
+                        ? 'bg-[#7E2948] text-white'
+                        : 'bg-white/10 text-slate-300'
+                    }`}
+                  >
+                    {index + 1}
+                  </div>
+
+                  <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <h4
+                        className={`font-heading font-bold text-sm ${
+                          isFirst ? 'text-[#181B28]' : 'text-white'
+                        }`}
+                      >
+                        {node.title}
+                      </h4>
+                      {isFirst ? (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#7E2948] text-white">
+                          Current Focus
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-slate-400">
+                          Upcoming
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-slate-500">
+                      <span className={isFirst ? 'text-slate-600' : 'text-slate-400'}>
+                        {node.category}
+                      </span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <BookOpen className="w-3 h-3" /> {node.lessonsCount} lessons
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-xs text-slate-300">Logistic regression, boundaries & loss curves</p>
-              </div>
-            </div>
-            <span className="text-xs font-bold text-[#F5CAD6]">
-              60% Ready
-            </span>
-          </div>
 
-          {/* Milestone 3: Model Evaluation (Next) */}
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 opacity-80">
-            <div className="flex items-center gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-white/10 text-slate-300 flex items-center justify-center shrink-0 font-bold text-sm">
-                3
+                <div className="flex items-center gap-2 self-end sm:self-center">
+                  {isFirst ? (
+                    <span className="text-xs font-bold text-[#7E2948] bg-[#7E2948]/10 px-2.5 py-1 rounded-lg">
+                      0% • Ready to Start
+                    </span>
+                  ) : (
+                    <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5" /> Locked
+                    </span>
+                  )}
+                </div>
               </div>
-              <div>
-                <h4 className="font-heading font-bold text-sm text-slate-200">
-                  3. Evaluation & Metrics
-                </h4>
-                <p className="text-xs text-slate-400">PR-AUC, ROC curves & threshold optimization</p>
-              </div>
-            </div>
-            <span className="text-xs text-slate-400 font-medium">
-              Next Up
-            </span>
-          </div>
-
-          {/* Milestone 4: Deep Neural Networks (Locked) */}
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 opacity-50">
-            <div className="flex items-center gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-white/5 text-slate-500 flex items-center justify-center shrink-0">
-                <Lock className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="font-heading font-bold text-sm text-slate-300">
-                  4. Deep Neural Networks
-                </h4>
-                <p className="text-xs text-slate-500">Backpropagation, attention & embeddings</p>
-              </div>
-            </div>
-            <span className="text-xs text-slate-500 font-medium">
-              Locked
-            </span>
-          </div>
+            );
+          })}
         </div>
 
-        {/* Action Button */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <Award className="w-4 h-4 text-[#F5CAD6]" />
-            <span>Path will sync automatically with your practice drills</span>
-          </div>
+        {/* CTA Launch */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+          <p className="text-xs text-slate-400">
+            All progress and quiz scores will update your real stats automatically.
+          </p>
 
           <button
             onClick={handleLaunchDashboard}
-            className="w-full sm:w-auto clay-btn-plum px-8 py-3.5 text-sm font-semibold flex items-center justify-center gap-3 cursor-pointer group shadow-xl"
+            className="w-full sm:w-auto clay-btn-plum px-8 py-3.5 text-xs font-semibold flex items-center justify-center gap-3 cursor-pointer group shadow-xl"
           >
             <span>Enter Dashboard</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -148,8 +149,8 @@ export const PathCreation: React.FC = () => {
         </div>
       </main>
 
-      <footer className="max-w-3xl mx-auto w-full text-center text-xs text-slate-500">
-        Free persistent navigation is now unlocked across all platform pages.
+      <footer className="max-w-4xl mx-auto w-full text-center text-xs text-slate-500">
+        LOGIQ stores your roadmap and activity in your browser session.
       </footer>
     </div>
   );

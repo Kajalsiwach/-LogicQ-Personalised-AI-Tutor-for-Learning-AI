@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Search, Bell, Sparkles, RefreshCcw } from 'lucide-react';
+import { Search, Bell, Sparkles, RefreshCcw, RotateCcw } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const {
-    triggerFirstTimeFlow,
-    triggerReturningFlow,
-    activePage,
+    resetToFreshUser,
+    setIsReturningWelcomeActive,
+    setIsOnboardingActive,
     setActivePage,
   } = useApp();
 
@@ -14,7 +14,7 @@ export const Header: React.FC = () => {
   const [showFlowMenu, setShowFlowMenu] = useState(false);
 
   return (
-    <header className="sticky top-0 z-20 backdrop-blur-md bg-[#080C15]/75 border-b border-white/[0.05] px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <header className="sticky top-0 z-20 backdrop-blur-xl bg-[#070B14]/75 border-b border-white/[0.07] px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       {/* Left: Dynamic Greeting based on Page */}
       <div>
         <div className="flex items-center gap-2">
@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
           <span className="text-xl inline-block animate-pulse">👋</span>
         </div>
         <p className="font-editorial italic text-slate-400 text-sm mt-0.5">
-          Keep up the great work on your AI/ML journey!
+          Ready to explore your personalized AI/ML curriculum!
         </p>
       </div>
 
@@ -37,49 +37,52 @@ export const Header: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search concepts, quizzes..."
+            placeholder="Search AI/ML concepts..."
             className="glass-pill pl-9 pr-4 py-1.5 rounded-full text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#E598AC]/50 w-44 sm:w-56 transition-all"
           />
         </div>
 
-        {/* Prototype Flow Switcher (Enables instantaneous switching between Onboarding & Returning flows) */}
+        {/* Prototype Flow Switcher & Reset Control */}
         <div className="relative">
           <button
             onClick={() => setShowFlowMenu(prev => !prev)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-[#F5CAD6] bg-[#FAF0F4]/10 hover:bg-[#FAF0F4]/15 border border-[#F5CAD6]/20 transition-all"
-            title="Toggle user onboarding / returning flow"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-[#F5CAD6] bg-[#FAF0F4]/10 hover:bg-[#FAF0F4]/15 border border-[#F5CAD6]/20 transition-all cursor-pointer"
+            title="User state simulation & reset"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Test Flows</span>
+            <span className="hidden md:inline">User State</span>
           </button>
 
           {showFlowMenu && (
-            <div className="absolute right-0 mt-2 w-56 glass-card-dark rounded-2xl p-2 z-50 border border-white/10 shadow-2xl">
+            <div className="absolute right-0 mt-2 w-60 glass-card-dark rounded-2xl p-2 z-50 border border-white/10 shadow-2xl">
               <div className="text-[10px] font-mono uppercase text-slate-400 px-3 py-1.5 font-semibold">
-                Simulate User State
+                Simulate State
               </div>
               <button
                 onClick={() => {
-                  triggerFirstTimeFlow();
+                  resetToFreshUser();
                   setShowFlowMenu(false);
                 }}
-                className="w-full text-left px-3 py-2 text-xs rounded-xl text-slate-200 hover:bg-white/10 flex items-center justify-between"
+                className="w-full text-left px-3 py-2 text-xs rounded-xl text-rose-300 hover:bg-rose-950/40 flex items-center justify-between"
               >
-                <span>First-Time Onboarding</span>
-                <span className="text-[10px] text-[#E598AC]">Start New</span>
+                <span>Reset to Fresh New User</span>
+                <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
               </button>
               <button
                 onClick={() => {
-                  triggerReturningFlow();
+                  setIsReturningWelcomeActive(true);
+                  setIsOnboardingActive(false);
                   setShowFlowMenu(false);
                 }}
                 className="w-full text-left px-3 py-2 text-xs rounded-xl text-slate-200 hover:bg-white/10 flex items-center justify-between"
               >
-                <span>Returning Resume Flow</span>
+                <span>Returning Resume Screen</span>
                 <span className="text-[10px] text-sky-400">Resume</span>
               </button>
               <button
                 onClick={() => {
+                  setIsOnboardingActive(false);
+                  setIsReturningWelcomeActive(false);
                   setActivePage('dashboard');
                   setShowFlowMenu(false);
                 }}
@@ -94,7 +97,7 @@ export const Header: React.FC = () => {
 
         {/* Notification Bell */}
         <button
-          className="relative p-2 rounded-full glass-pill text-slate-300 hover:text-white transition-colors"
+          className="relative p-2 rounded-full glass-pill text-slate-300 hover:text-white transition-colors cursor-pointer"
           title="Notifications"
         >
           <Bell className="w-4 h-4" />
@@ -104,7 +107,7 @@ export const Header: React.FC = () => {
         {/* User Profile Avatar */}
         <button
           onClick={() => setActivePage('profile')}
-          className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#E598AC]/40 transition-all"
+          className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#E598AC]/40 transition-all cursor-pointer"
           title="Alex Profile"
         >
           <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#7E2948] to-[#F5CAD6] p-[1.5px]">
